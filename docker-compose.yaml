@@ -1,0 +1,55 @@
+version: '3.1'
+
+services:
+
+  nginx:
+    image: nginx
+    depends_on: 
+      - blog
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/logs:/var/logs
+    networks:
+      - ytg2097.com
+
+  blog:
+    image: wordpress
+    depends_on: 
+      - mysql
+#    ports:
+#      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - ./html:/var/www/html
+    networks:
+      - ytg2097.com
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    volumes:
+      - ./mysql/mysqld_wp.cnf:/etc/mysql/conf.d/mysqld_wp.cnf
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - ytg2097.com
+
+networks:
+  ytg2097.com:
+    name: ytg2097.com
+
+volumes:
+  wp:
+  mysql:
